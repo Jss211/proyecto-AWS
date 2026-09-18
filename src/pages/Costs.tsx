@@ -194,7 +194,7 @@ export const Costs: React.FC = () => {
                   dataKey="monthlyCost"
                   nameKey="serviceName"
                 >
-                  {billingData.map((entry, index) => (
+                  {billingData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

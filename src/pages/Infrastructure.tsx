@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, MapPin, Server, ShieldCheck, Map, Cloud } from 'lucide-react';
+import { MapPin, Server, ShieldCheck, Map, Cloud } from 'lucide-react';
 import { globalRegions } from '../data/mockData';
 import { StatusBadge } from '../components/StatusBadge';
 
