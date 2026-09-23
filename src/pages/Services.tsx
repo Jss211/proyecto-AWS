@@ -1,25 +1,159 @@
-import React from 'react';
-import { Server, HardHat } from 'lucide-react';
+import React, { useState } from 'react';
+import { Server, Database, Users, Shield, Waypoints, Cloud, HardDrive, Search, Filter } from 'lucide-react';
+
+interface AwsServiceInfo {
+  id: string;
+  name: string;
+  category: string;
+  desc: string;
+  func: string;
+  status: 'Activo' | 'En Mantenimiento' | 'Optimizado';
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+}
+
+const servicesData: AwsServiceInfo[] = [
+  { id: 'ec2', name: 'Amazon EC2', category: 'Computación', desc: 'Capacidad de cómputo segura y redimensionable en la nube. Permite lanzar servidores virtuales bajo demanda.', func: 'Servidores Virtuales', status: 'Activo', icon: Server, color: 'text-orange-600', bg: 'bg-orange-100' },
+  { id: 's3', name: 'Amazon S3', category: 'Almacenamiento', desc: 'Almacenamiento de objetos construido para almacenar y recuperar cualquier cantidad de datos desde cualquier lugar.', func: 'Almacenamiento de Archivos', status: 'Activo', icon: HardDrive, color: 'text-green-600', bg: 'bg-green-100' },
+  { id: 'rds', name: 'Amazon RDS', category: 'Base de Datos', desc: 'Servicio de base de datos relacional administrado. Facilita la configuración y escalabilidad de bases de datos.', func: 'Base de Datos Relacional', status: 'En Mantenimiento', icon: Database, color: 'text-blue-600', bg: 'bg-blue-100' },
+  { id: 'iam', name: 'AWS IAM', category: 'Seguridad', desc: 'Administre el acceso a los servicios y recursos de AWS de manera segura mediante políticas granulares.', func: 'Gestión de Accesos', status: 'Activo', icon: Users, color: 'text-red-600', bg: 'bg-red-100' },
+  { id: 'vpc', name: 'Amazon VPC', category: 'Redes', desc: 'Aísle lógicamente sus recursos en una red virtual definida y controle todo el tráfico de red.', func: 'Red Privada Virtual', status: 'Activo', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100' },
+  { id: 'route53', name: 'Amazon Route 53', category: 'Redes', desc: 'Servicio web de DNS en la nube, altamente disponible y escalable para enrutar el tráfico de usuarios.', func: 'Resolución DNS', status: 'Activo', icon: Waypoints, color: 'text-orange-500', bg: 'bg-orange-50' },
+  { id: 'cloudfront', name: 'Amazon CloudFront', category: 'Redes', desc: 'Red de entrega de contenido (CDN) rápida, altamente segura y programable para datos estáticos y dinámicos.', func: 'CDN Global', status: 'Optimizado', icon: Cloud, color: 'text-purple-600', bg: 'bg-purple-100' },
+];
+
+const categories = ['Todos', ...Array.from(new Set(servicesData.map(s => s.category)))];
 
 export const Services: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('Todos');
+
+  const filteredServices = servicesData.filter(service => {
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          service.desc.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = activeCategory === 'Todos' || service.category === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case 'Activo': return 'bg-green-50 text-green-700 border-green-200';
+      case 'En Mantenimiento': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'Optimizado': return 'bg-blue-50 text-blue-700 border-blue-200';
+      default: return 'bg-slate-50 text-slate-700 border-slate-200';
+    }
+  };
+
+  const getStatusDot = (status: string) => {
+    switch (status) {
+      case 'Activo': return 'bg-green-500';
+      case 'En Mantenimiento': return 'bg-yellow-500';
+      case 'Optimizado': return 'bg-blue-500';
+      default: return 'bg-slate-500';
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[75vh] text-center space-y-6">
-      <div className="bg-slate-100 p-8 rounded-full text-slate-300 relative">
-        <Server size={64} />
-        <div className="absolute -bottom-2 -right-2 bg-blue-100 text-blue-600 p-2 rounded-full border-4 border-white">
-          <HardHat size={24} />
+    <div className="space-y-8 pb-10">
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div>
+          <h1 className="text-2xl font-bold text-texto-principal">Catálogo de Servicios AWS</h1>
+          <p className="text-texto-secundario mt-1">Explora, filtra y consulta los servicios utilizados en la infraestructura.</p>
+        </div>
+        
+        {/* BUSCADOR */}
+        <div className="relative w-full md:w-72">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search size={18} className="text-slate-400" />
+          </div>
+          <input
+            type="text"
+            className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all"
+            placeholder="Buscar por nombre o descripción..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
-      <div>
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Catálogo de Servicios</h1>
-        <p className="text-slate-500 font-medium max-w-md mx-auto">
-          El catálogo de integración técnica con los SDK de AWS se encuentra actualmente en desarrollo y producción por el equipo de ingeniería.
-        </p>
+
+      {/* FILTROS DE CATEGORÍA */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <Filter size={18} className="text-slate-400 mr-2 shrink-0" />
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
+              activeCategory === cat 
+                ? 'bg-principal text-white shadow-md shadow-blue-500/20' 
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
-      <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 font-bold px-4 py-2 rounded-full text-xs uppercase tracking-widest">
-        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-        En Producción
-      </div>
+
+      {/* GRID DE SERVICIOS */}
+      {filteredServices.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredServices.map((service) => (
+            <div 
+              key={service.id} 
+              className="bg-cards border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full"
+            >
+              {/* Card Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className={`p-3 rounded-xl ${service.bg} ${service.color} group-hover:scale-110 transition-transform duration-300`}>
+                  {React.createElement(service.icon, { size: 28 })}
+                </div>
+                <span className="bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-slate-200">
+                  {service.category}
+                </span>
+              </div>
+              
+              {/* Card Body */}
+              <h3 className="text-xl font-bold text-texto-principal mb-2 group-hover:text-principal transition-colors">
+                {service.name}
+              </h3>
+              <p className="text-sm text-texto-secundario leading-relaxed flex-1 mb-6">
+                {service.desc}
+              </p>
+
+              {/* Card Footer (Función y Estado) */}
+              <div className="mt-auto space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-semibold text-slate-500">Función:</span>
+                  <span className="font-bold text-texto-principal text-right">{service.func}</span>
+                </div>
+                
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-semibold text-slate-500">Estado:</span>
+                  <div className={`px-3 py-1 rounded-full border flex items-center gap-2 text-xs font-bold uppercase tracking-wide ${getStatusStyle(service.status)}`}>
+                    <div className={`w-1.5 h-1.5 rounded-full ${getStatusDot(service.status)} ${service.status === 'Activo' || service.status === 'Optimizado' ? 'animate-pulse' : ''}`}></div>
+                    {service.status}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Empty State */
+        <div className="flex flex-col items-center justify-center py-20 bg-white border border-slate-200 rounded-3xl border-dashed">
+          <Search size={48} className="text-slate-300 mb-4" />
+          <h3 className="text-lg font-bold text-slate-700">No se encontraron servicios</h3>
+          <p className="text-slate-500">Intenta con otros términos de búsqueda o cambia la categoría.</p>
+          <button 
+            onClick={() => { setSearchTerm(''); setActiveCategory('Todos'); }}
+            className="mt-4 px-4 py-2 bg-blue-50 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            Limpiar Filtros
+          </button>
+        </div>
+      )}
     </div>
   );
 };

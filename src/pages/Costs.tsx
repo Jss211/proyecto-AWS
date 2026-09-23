@@ -24,12 +24,26 @@ export const Costs: React.FC = () => {
     const saved = localStorage.getItem('cloudCosts');
     return saved ? JSON.parse(saved) : initialBillingData;
   });
-  const [month, setMonth] = useState('2026-09');
+  const [date, setDate] = useState('2026-09-22');
   const [selectedService, setSelectedService] = useState('AWS Lambda');
 
   useEffect(() => {
     localStorage.setItem('cloudCosts', JSON.stringify(billingData));
   }, [billingData]);
+
+  // Simular variación de costos cuando se cambia de fecha
+  useEffect(() => {
+    setBillingData(prev => prev.map(item => {
+      // Mayor variación (entre 50% y 150%) para que el cambio en el gráfico de pie sea muy evidente
+      const variation = 0.5 + Math.random(); 
+      const newMonthly = Math.max(10, Math.floor(item.monthlyCost * variation));
+      return {
+        ...item,
+        monthlyCost: newMonthly,
+        annualCost: newMonthly * 12
+      };
+    }));
+  }, [date]);
 
   // Cálculo de totales
   const totalMensual = billingData.reduce((acc: number, item: BillingItem) => acc + item.monthlyCost, 0);
@@ -64,41 +78,41 @@ export const Costs: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div className="flex-1 pr-4">
           <h1 className="text-2xl font-bold text-texto-principal">Análisis de Costos</h1>
           <p className="text-texto-secundario">Presupuesto detallado por cantidad, horas y estimaciones mensuales/anuales.</p>
         </div>
-        
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="bg-white border border-bordes rounded-lg p-2 flex items-center gap-2 shadow-sm">
-            <Calendar size={18} className="text-texto-secundario" />
+        <div className="flex flex-wrap lg:flex-nowrap items-center gap-3 shrink-0">
+          {/* Calendario */}
+          <div className="bg-white px-3 py-1.5 rounded-md border border-slate-200 flex items-center gap-2 shadow-sm h-[36px]">
+            <Calendar size={16} className="text-texto-secundario" />
             <input 
-              type="month" value={month} onChange={(e) => setMonth(e.target.value)}
-              className="bg-transparent text-sm font-semibold text-texto-principal outline-none cursor-pointer"
+              type="date" value={date} onChange={(e) => setDate(e.target.value)}
+              className="bg-transparent text-sm font-semibold text-texto-principal outline-none cursor-pointer leading-none"
             />
           </div>
           
-          {/* NUEVO: Selector de Servicio */}
-          <div className="flex bg-fondo p-1.5 rounded-lg border border-bordes shadow-sm">
-            <select 
-              value={selectedService}
-              onChange={(e) => setSelectedService(e.target.value)}
-              className="bg-white px-3 py-1.5 rounded-md text-sm outline-none border border-slate-200 font-semibold text-texto-principal"
-            >
-              <option value="AWS Lambda">AWS Lambda</option>
-              <option value="Amazon S3">Amazon S3</option>
-              <option value="Amazon RDS">Amazon RDS</option>
-              <option value="Amazon CloudFront">Amazon CloudFront</option>
-              <option value="Amazon VPC (NAT)">Amazon VPC (NAT)</option>
-            </select>
-            <button onClick={handleAddService} className="bg-principal hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 ml-2 transition-colors">
-              <Plus size={16} /> Añadir
-            </button>
-            <button onClick={handleReset} className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 ml-2 transition-colors" title="Restaurar servicios originales">
-              <RotateCcw size={16} /> Restablecer
-            </button>
-          </div>
+          {/* Selector de Servicio */}
+          <select 
+            value={selectedService}
+            onChange={(e) => setSelectedService(e.target.value)}
+            className="bg-white px-3 py-1.5 rounded-md text-sm outline-none border border-slate-200 font-semibold text-texto-principal shadow-sm h-[36px]"
+          >
+            <option value="AWS Lambda">AWS Lambda</option>
+            <option value="Amazon S3">Amazon S3</option>
+            <option value="Amazon RDS">Amazon RDS</option>
+            <option value="Amazon CloudFront">Amazon CloudFront</option>
+            <option value="Amazon VPC (NAT)">Amazon VPC (NAT)</option>
+          </select>
+          
+          <button onClick={handleAddService} className="bg-principal hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm h-[36px]">
+            <Plus size={16} /> Añadir
+          </button>
+          
+          <button onClick={handleReset} className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm h-[36px]" title="Restaurar servicios originales">
+            <RotateCcw size={16} /> Restablecer
+          </button>
         </div>
       </div>
 
