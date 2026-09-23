@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe, Waypoints, Cloud, Server, Database, ArrowDown, Shield, Info, MousePointerClick } from 'lucide-react';
+import { Globe, Waypoints, Cloud, Server, Database, ArrowDown, Shield, MousePointerClick } from 'lucide-react';
 
 export const Network: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
@@ -205,8 +205,8 @@ export const Network: React.FC = () => {
 
           {/* 4. VPC (Contenedor) */}
           <div 
-            onClick={(e) => {
-              // Prevenir que clics en los hijos también activen el VPC si no queremos, 
+            onClick={() => {
+              // Prevenir que clics en los hijos tambiǸn activen el VPC si no queremos, 
               // pero como los hijos tienen e.stopPropagation() lo manejaremos.
               setSelectedNode('vpc');
             }}

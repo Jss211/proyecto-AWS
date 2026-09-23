@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Server, DollarSign, ShieldAlert, Activity, MapPin, Database, Target, Cloud, AlertCircle, Bell, ChevronDown, Loader2 } from 'lucide-react';
+import { Server, DollarSign, ShieldAlert, Activity, MapPin, Database, Target, Cloud, Bell, ChevronDown, Loader2 } from 'lucide-react';
 import { securityStatus } from '../data/mockData';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import type { CloudProposal } from '../types/cloud';
