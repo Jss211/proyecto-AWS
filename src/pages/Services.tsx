@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Server, Database, Users, Shield, Waypoints, Cloud, HardDrive, Search, Filter } from 'lucide-react';
+import { Server, Database, Users, Shield, Waypoints, Cloud, HardDrive, Search, Filter, X, ExternalLink, CheckCircle, Clock } from 'lucide-react';
 
 interface AwsServiceInfo {
   id: string;
@@ -11,16 +11,17 @@ interface AwsServiceInfo {
   icon: React.ElementType;
   color: string;
   bg: string;
+  details?: { region: string; tier: string; uptime: string; lastUpdated: string; };
 }
 
 const servicesData: AwsServiceInfo[] = [
-  { id: 'ec2', name: 'Amazon EC2', category: 'Computación', desc: 'Capacidad de cómputo segura y redimensionable en la nube. Permite lanzar servidores virtuales bajo demanda.', func: 'Servidores Virtuales', status: 'Activo', icon: Server, color: 'text-orange-600', bg: 'bg-orange-100' },
-  { id: 's3', name: 'Amazon S3', category: 'Almacenamiento', desc: 'Almacenamiento de objetos construido para almacenar y recuperar cualquier cantidad de datos desde cualquier lugar.', func: 'Almacenamiento de Archivos', status: 'Activo', icon: HardDrive, color: 'text-green-600', bg: 'bg-green-100' },
-  { id: 'rds', name: 'Amazon RDS', category: 'Base de Datos', desc: 'Servicio de base de datos relacional administrado. Facilita la configuración y escalabilidad de bases de datos.', func: 'Base de Datos Relacional', status: 'En Mantenimiento', icon: Database, color: 'text-blue-600', bg: 'bg-blue-100' },
-  { id: 'iam', name: 'AWS IAM', category: 'Seguridad', desc: 'Administre el acceso a los servicios y recursos de AWS de manera segura mediante políticas granulares.', func: 'Gestión de Accesos', status: 'Activo', icon: Users, color: 'text-red-600', bg: 'bg-red-100' },
-  { id: 'vpc', name: 'Amazon VPC', category: 'Redes', desc: 'Aísle lógicamente sus recursos en una red virtual definida y controle todo el tráfico de red.', func: 'Red Privada Virtual', status: 'Activo', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-  { id: 'route53', name: 'Amazon Route 53', category: 'Redes', desc: 'Servicio web de DNS en la nube, altamente disponible y escalable para enrutar el tráfico de usuarios.', func: 'Resolución DNS', status: 'Activo', icon: Waypoints, color: 'text-orange-500', bg: 'bg-orange-50' },
-  { id: 'cloudfront', name: 'Amazon CloudFront', category: 'Redes', desc: 'Red de entrega de contenido (CDN) rápida, altamente segura y programable para datos estáticos y dinámicos.', func: 'CDN Global', status: 'Optimizado', icon: Cloud, color: 'text-purple-600', bg: 'bg-purple-100' },
+  { id: 'ec2', name: 'Amazon EC2', category: 'Computación', desc: 'Capacidad de cómputo segura y redimensionable en la nube. Permite lanzar servidores virtuales bajo demanda.', func: 'Servidores Virtuales', status: 'Activo', icon: Server, color: 'text-orange-600', bg: 'bg-orange-100', details: { region: 'us-east-1', tier: 'T3.Micro (Auto-Scaling)', uptime: '99.99%', lastUpdated: 'Hoy, 08:30 AM' } },
+  { id: 's3', name: 'Amazon S3', category: 'Almacenamiento', desc: 'Almacenamiento de objetos construido para almacenar y recuperar cualquier cantidad de datos desde cualquier lugar.', func: 'Almacenamiento de Archivos', status: 'Activo', icon: HardDrive, color: 'text-green-600', bg: 'bg-green-100', details: { region: 'Global', tier: 'S3 Standard', uptime: '99.9999%', lastUpdated: 'Hace 2 dias' } },
+  { id: 'rds', name: 'Amazon RDS', category: 'Base de Datos', desc: 'Servicio de base de datos relacional administrado. Facilita la configuración y escalabilidad de bases de datos.', func: 'Base de Datos Relacional', status: 'En Mantenimiento', icon: Database, color: 'text-blue-600', bg: 'bg-blue-100', details: { region: 'us-east-1', tier: 'db.t3.small', uptime: '98.50%', lastUpdated: 'Hace 1 hora' } },
+  { id: 'iam', name: 'AWS IAM', category: 'Seguridad', desc: 'Administre el acceso a los servicios y recursos de AWS de manera segura mediante políticas granulares.', func: 'Gestión de Accesos', status: 'Activo', icon: Users, color: 'text-red-600', bg: 'bg-red-100', details: { region: 'Global', tier: 'Gratuito', uptime: '100%', lastUpdated: 'Hace 1 semana' } },
+  { id: 'vpc', name: 'Amazon VPC', category: 'Redes', desc: 'Aísle lógicamente sus recursos en una red virtual definida y controle todo el tráfico de red.', func: 'Red Privada Virtual', status: 'Activo', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100', details: { region: 'us-east-1', tier: 'VPC con NAT Gateway', uptime: '100%', lastUpdated: 'Ayer' } },
+  { id: 'route53', name: 'Amazon Route 53', category: 'Redes', desc: 'Servicio web de DNS en la nube, altamente disponible y escalable para enrutar el tráfico de usuarios.', func: 'Resolución DNS', status: 'Activo', icon: Waypoints, color: 'text-orange-500', bg: 'bg-orange-50', details: { region: 'Global', tier: 'Zonas Alojadas Publicas', uptime: '100%', lastUpdated: 'Hace 1 mes' } },
+  { id: 'cloudfront', name: 'Amazon CloudFront', category: 'Redes', desc: 'Red de entrega de contenido (CDN) rápida, altamente segura y programable para datos estáticos y dinámicos.', func: 'CDN Global', status: 'Optimizado', icon: Cloud, color: 'text-purple-600', bg: 'bg-purple-100', details: { region: 'Global', tier: 'Optimizacion de Cache', uptime: '99.99%', lastUpdated: 'Hoy, 10:15 AM' } },
 ];
 
 const categories = ['Todos', ...Array.from(new Set(servicesData.map(s => s.category)))];
@@ -28,6 +29,7 @@ const categories = ['Todos', ...Array.from(new Set(servicesData.map(s => s.categ
 export const Services: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
+  const [selectedDetailService, setSelectedDetailService] = useState<AwsServiceInfo | null>(null);
 
   const filteredServices = servicesData.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -102,7 +104,8 @@ export const Services: React.FC = () => {
           {filteredServices.map((service) => (
             <div 
               key={service.id} 
-              className="bg-cards border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full"
+              onClick={() => setSelectedDetailService(service)}
+              className="bg-cards border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-principal hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full cursor-pointer"
             >
               {/* Card Header */}
               <div className="flex items-start justify-between mb-4">
@@ -154,6 +157,68 @@ export const Services: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* MODAL DE VISTA DETALLADA */}
+      {selectedDetailService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity" onClick={() => setSelectedDetailService(null)}>
+          <div className="bg-cards border border-bordes rounded-3xl p-8 shadow-2xl max-w-lg w-full relative transform scale-100 transition-transform" onClick={e => e.stopPropagation()}>
+            <button 
+              onClick={() => setSelectedDetailService(null)} 
+              className="absolute top-5 right-5 text-texto-secundario hover:text-texto-principal bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors"
+            >
+               <X size={20} />
+            </button>
+            
+            <div className="flex items-center gap-4 mb-6">
+              <div className={`p-4 rounded-2xl ${selectedDetailService.bg} ${selectedDetailService.color}`}>
+                {React.createElement(selectedDetailService.icon, { size: 36 })}
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-texto-principal">{selectedDetailService.name}</h2>
+                <span className="text-xs font-bold text-texto-secundario uppercase tracking-wider">{selectedDetailService.category}</span>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-sm font-semibold text-texto-secundario mb-2">Descripción del Servicio</h4>
+                <p className="text-texto-principal leading-relaxed">{selectedDetailService.desc}</p>
+              </div>
+
+              {selectedDetailService.details && (
+                <div className="grid grid-cols-2 gap-4 bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                  <div>
+                    <span className="block text-xs font-semibold text-texto-secundario uppercase mb-1">Región</span>
+                    <span className="font-bold text-texto-principal flex items-center gap-1"><Waypoints size={14} className="text-principal" /> {selectedDetailService.details.region}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs font-semibold text-texto-secundario uppercase mb-1">Capa/Tier</span>
+                    <span className="font-bold text-texto-principal flex items-center gap-1"><Server size={14} className="text-principal" /> {selectedDetailService.details.tier}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs font-semibold text-texto-secundario uppercase mb-1">Uptime (SLA)</span>
+                    <span className="font-bold text-green-600 flex items-center gap-1"><CheckCircle size={14} /> {selectedDetailService.details.uptime}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs font-semibold text-texto-secundario uppercase mb-1">Última Actividad</span>
+                    <span className="font-bold text-texto-principal flex items-center gap-1"><Clock size={14} className="text-slate-400" /> {selectedDetailService.details.lastUpdated}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button onClick={() => setSelectedDetailService(null)} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors">
+                  Cerrar
+                </button>
+                <button className="px-5 py-2.5 bg-principal hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2 shadow-md shadow-blue-500/20 transition-all">
+                  <ExternalLink size={18} /> Ver Documentación
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

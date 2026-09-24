@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingDown, Calendar, Plus, Trash2, Clock, Hash, Activity, RotateCcw } from 'lucide-react';
+import { DollarSign, TrendingDown, Calendar, Plus, Trash2, Clock, Hash, Activity, RotateCcw, Download } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 // Estructura de datos avanzada con los requisitos exactos
@@ -74,6 +74,27 @@ export const Costs: React.FC = () => {
     setBillingData(initialBillingData);
   };
 
+  const exportToCSV = () => {
+    const headers = ['Servicio AWS', 'Cantidad', 'Horas Estimadas', 'Costo Mensual ($)', 'Costo Anual ($)'];
+    const rows = billingData.map(item => [
+      item.serviceName,
+      item.quantity,
+      item.hours,
+      item.monthlyCost,
+      item.annualCost
+    ]);
+    // Usamos punto y coma (;) y agregamos BOM (\uFEFF) para que Excel lo lea perfecto en español
+    const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(e => e.join(';'))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `reporte_costos_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444', '#06B6D4', '#F97316'];
 
   return (
@@ -112,6 +133,10 @@ export const Costs: React.FC = () => {
           
           <button onClick={handleReset} className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm h-[36px]" title="Restaurar servicios originales">
             <RotateCcw size={16} /> Restablecer
+          </button>
+          
+          <button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap shadow-sm h-[36px]" title="Exportar reporte a CSV">
+            <Download size={16} /> Exportar CSV
           </button>
         </div>
       </div>

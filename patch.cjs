@@ -1,0 +1,10 @@
+const fs=require('fs');
+let c=fs.readFileSync('src/pages/Services.tsx','utf8');
+c=c.replace(/bg: 'bg-orange-100' },/g, "bg: 'bg-orange-100', details: { region: 'us-east-1', tier: 'T3.Micro (Auto-Scaling)', uptime: '99.99%', lastUpdated: 'Hoy, 08:30 AM' } },");
+c=c.replace(/bg: 'bg-green-100' },/g, "bg: 'bg-green-100', details: { region: 'Global', tier: 'S3 Standard', uptime: '99.9999%', lastUpdated: 'Hace 2 dias' } },");
+c=c.replace(/bg: 'bg-blue-100' },/g, "bg: 'bg-blue-100', details: { region: 'us-east-1', tier: 'db.t3.small', uptime: '98.50%', lastUpdated: 'Hace 1 hora' } },");
+c=c.replace(/bg: 'bg-red-100' },/g, "bg: 'bg-red-100', details: { region: 'Global', tier: 'Gratuito', uptime: '100%', lastUpdated: 'Hace 1 semana' } },");
+c=c.replace(/bg: 'bg-emerald-100' },/g, "bg: 'bg-emerald-100', details: { region: 'us-east-1', tier: 'VPC con NAT Gateway', uptime: '100%', lastUpdated: 'Ayer' } },");
+c=c.replace(/bg: 'bg-orange-50' },/g, "bg: 'bg-orange-50', details: { region: 'Global', tier: 'Zonas Alojadas Publicas', uptime: '100%', lastUpdated: 'Hace 1 mes' } },");
+c=c.replace(/bg: 'bg-purple-100' },/g, "bg: 'bg-purple-100', details: { region: 'Global', tier: 'Optimizacion de Cache', uptime: '99.99%', lastUpdated: 'Hoy, 10:15 AM' } },");
+fs.writeFileSync('src/pages/Services.tsx', c, 'utf8');
