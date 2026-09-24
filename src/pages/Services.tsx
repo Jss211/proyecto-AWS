@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Server, Database, Users, Shield, Waypoints, Cloud, HardDrive, Search, Filter, X, ExternalLink, CheckCircle, Clock } from 'lucide-react';
+import { Server, Database, Users, Shield, Waypoints, Cloud, HardDrive, Search, Filter, X, ExternalLink, CheckCircle, Clock, DollarSign, Activity } from 'lucide-react';
 
 interface AwsServiceInfo {
   id: string;
@@ -11,17 +11,20 @@ interface AwsServiceInfo {
   icon: React.ElementType;
   color: string;
   bg: string;
-  details?: { region: string; tier: string; uptime: string; lastUpdated: string; };
+  hoverBorder: string;
+  hoverIconBg: string;
+  hoverText: string;
+  details?: { region: string; tier: string; uptime: string; lastUpdated: string; price: string; latency: string; };
 }
 
 const servicesData: AwsServiceInfo[] = [
-  { id: 'ec2', name: 'Amazon EC2', category: 'Computación', desc: 'Capacidad de cómputo segura y redimensionable en la nube. Permite lanzar servidores virtuales bajo demanda.', func: 'Servidores Virtuales', status: 'Activo', icon: Server, color: 'text-orange-600', bg: 'bg-orange-100', details: { region: 'us-east-1', tier: 'T3.Micro (Auto-Scaling)', uptime: '99.99%', lastUpdated: 'Hoy, 08:30 AM' } },
-  { id: 's3', name: 'Amazon S3', category: 'Almacenamiento', desc: 'Almacenamiento de objetos construido para almacenar y recuperar cualquier cantidad de datos desde cualquier lugar.', func: 'Almacenamiento de Archivos', status: 'Activo', icon: HardDrive, color: 'text-green-600', bg: 'bg-green-100', details: { region: 'Global', tier: 'S3 Standard', uptime: '99.9999%', lastUpdated: 'Hace 2 dias' } },
-  { id: 'rds', name: 'Amazon RDS', category: 'Base de Datos', desc: 'Servicio de base de datos relacional administrado. Facilita la configuración y escalabilidad de bases de datos.', func: 'Base de Datos Relacional', status: 'En Mantenimiento', icon: Database, color: 'text-blue-600', bg: 'bg-blue-100', details: { region: 'us-east-1', tier: 'db.t3.small', uptime: '98.50%', lastUpdated: 'Hace 1 hora' } },
-  { id: 'iam', name: 'AWS IAM', category: 'Seguridad', desc: 'Administre el acceso a los servicios y recursos de AWS de manera segura mediante políticas granulares.', func: 'Gestión de Accesos', status: 'Activo', icon: Users, color: 'text-red-600', bg: 'bg-red-100', details: { region: 'Global', tier: 'Gratuito', uptime: '100%', lastUpdated: 'Hace 1 semana' } },
-  { id: 'vpc', name: 'Amazon VPC', category: 'Redes', desc: 'Aísle lógicamente sus recursos en una red virtual definida y controle todo el tráfico de red.', func: 'Red Privada Virtual', status: 'Activo', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100', details: { region: 'us-east-1', tier: 'VPC con NAT Gateway', uptime: '100%', lastUpdated: 'Ayer' } },
-  { id: 'route53', name: 'Amazon Route 53', category: 'Redes', desc: 'Servicio web de DNS en la nube, altamente disponible y escalable para enrutar el tráfico de usuarios.', func: 'Resolución DNS', status: 'Activo', icon: Waypoints, color: 'text-orange-500', bg: 'bg-orange-50', details: { region: 'Global', tier: 'Zonas Alojadas Publicas', uptime: '100%', lastUpdated: 'Hace 1 mes' } },
-  { id: 'cloudfront', name: 'Amazon CloudFront', category: 'Redes', desc: 'Red de entrega de contenido (CDN) rápida, altamente segura y programable para datos estáticos y dinámicos.', func: 'CDN Global', status: 'Optimizado', icon: Cloud, color: 'text-purple-600', bg: 'bg-purple-100', details: { region: 'Global', tier: 'Optimizacion de Cache', uptime: '99.99%', lastUpdated: 'Hoy, 10:15 AM' } },
+  { id: 'ec2', name: 'Amazon EC2', category: 'Computación', desc: 'Capacidad de cómputo segura y redimensionable en la nube. Permite lanzar servidores virtuales bajo demanda.', func: 'Servidores Virtuales', status: 'Activo', icon: Server, color: 'text-orange-600', bg: 'bg-orange-100', hoverBorder: 'hover:border-orange-500', hoverIconBg: 'group-hover:bg-orange-500', hoverText: 'group-hover:text-orange-600', details: { region: 'us-east-1', tier: 'T3.Micro (Auto-Scaling)', uptime: '99.99%', lastUpdated: 'Hoy, 08:30 AM', price: '$0.0416/h', latency: '45ms' } },
+  { id: 's3', name: 'Amazon S3', category: 'Almacenamiento', desc: 'Almacenamiento de objetos construido para almacenar y recuperar cualquier cantidad de datos desde cualquier lugar.', func: 'Almacenamiento de Archivos', status: 'Activo', icon: HardDrive, color: 'text-green-600', bg: 'bg-green-100', hoverBorder: 'hover:border-green-500', hoverIconBg: 'group-hover:bg-green-500', hoverText: 'group-hover:text-green-600', details: { region: 'Global', tier: 'S3 Standard', uptime: '99.9999%', lastUpdated: 'Hace 2 días', price: '$0.023/GB', latency: '120ms' } },
+  { id: 'rds', name: 'Amazon RDS', category: 'Base de Datos', desc: 'Servicio de base de datos relacional administrado. Facilita la configuración y escalabilidad de bases de datos.', func: 'Base de Datos Relacional', status: 'En Mantenimiento', icon: Database, color: 'text-blue-600', bg: 'bg-blue-100', hoverBorder: 'hover:border-blue-500', hoverIconBg: 'group-hover:bg-blue-500', hoverText: 'group-hover:text-blue-600', details: { region: 'us-east-1', tier: 'db.t3.small', uptime: '98.50%', lastUpdated: 'Hace 1 hora', price: '$0.068/h', latency: '15ms' } },
+  { id: 'iam', name: 'AWS IAM', category: 'Seguridad', desc: 'Administre el acceso a los servicios y recursos de AWS de manera segura mediante políticas granulares.', func: 'Gestión de Accesos', status: 'Activo', icon: Users, color: 'text-red-600', bg: 'bg-red-100', hoverBorder: 'hover:border-red-500', hoverIconBg: 'group-hover:bg-red-500', hoverText: 'group-hover:text-red-600', details: { region: 'Global', tier: 'Gratuito', uptime: '100%', lastUpdated: 'Hace 1 semana', price: 'Gratis', latency: '<10ms' } },
+  { id: 'vpc', name: 'Amazon VPC', category: 'Redes', desc: 'Aísle lógicamente sus recursos en una red virtual definida y controle todo el tráfico de red.', func: 'Red Privada Virtual', status: 'Activo', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100', hoverBorder: 'hover:border-emerald-500', hoverIconBg: 'group-hover:bg-emerald-500', hoverText: 'group-hover:text-emerald-600', details: { region: 'us-east-1', tier: 'VPC con NAT Gateway', uptime: '100%', lastUpdated: 'Ayer', price: '$0.045/h', latency: '<5ms' } },
+  { id: 'route53', name: 'Amazon Route 53', category: 'Redes', desc: 'Servicio web de DNS en la nube, altamente disponible y escalable para enrutar el tráfico de usuarios.', func: 'Resolución DNS', status: 'Activo', icon: Waypoints, color: 'text-orange-500', bg: 'bg-orange-50', hoverBorder: 'hover:border-orange-500', hoverIconBg: 'group-hover:bg-orange-500', hoverText: 'group-hover:text-orange-500', details: { region: 'Global', tier: 'Zonas Alojadas Públicas', uptime: '100%', lastUpdated: 'Hace 1 mes', price: '$0.50/zona', latency: 'Global' } },
+  { id: 'cloudfront', name: 'Amazon CloudFront', category: 'Redes', desc: 'Red de entrega de contenido (CDN) rápida, altamente segura y programable para datos estáticos y dinámicos.', func: 'CDN Global', status: 'Optimizado', icon: Cloud, color: 'text-purple-600', bg: 'bg-purple-100', hoverBorder: 'hover:border-purple-500', hoverIconBg: 'group-hover:bg-purple-500', hoverText: 'group-hover:text-purple-600', details: { region: 'Global', tier: 'Optimización de Caché', uptime: '99.99%', lastUpdated: 'Hoy, 10:15 AM', price: '$0.085/GB', latency: '20ms' } },
 ];
 
 const categories = ['Todos', ...Array.from(new Set(servicesData.map(s => s.category)))];
@@ -105,11 +108,11 @@ export const Services: React.FC = () => {
             <div 
               key={service.id} 
               onClick={() => setSelectedDetailService(service)}
-              className="bg-cards border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-principal hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full cursor-pointer"
+              className={`bg-cards border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-xl ${service.hoverBorder} hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full cursor-pointer relative`}
             >
               {/* Card Header */}
               <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-xl ${service.bg} ${service.color} group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`p-3 rounded-xl ${service.bg} ${service.color} group-hover:scale-110 ${service.hoverIconBg} group-hover:text-white transition-all duration-300`}>
                   {React.createElement(service.icon, { size: 28 })}
                 </div>
                 <span className="bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-slate-200">
@@ -118,12 +121,26 @@ export const Services: React.FC = () => {
               </div>
               
               {/* Card Body */}
-              <h3 className="text-xl font-bold text-texto-principal mb-2 group-hover:text-principal transition-colors">
+              <h3 className={`text-xl font-bold text-texto-principal mb-2 ${service.hoverText} transition-colors`}>
                 {service.name}
               </h3>
               <p className="text-sm text-texto-secundario leading-relaxed flex-1 mb-6">
                 {service.desc}
               </p>
+
+              {/* Nuevas Métricas: Precio y Latencia */}
+              {service.details && (
+                <div className="grid grid-cols-2 gap-2 mb-5">
+                  <div className="flex flex-col p-2 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1"><DollarSign size={12}/> Tarifa</span>
+                    <span className="text-sm font-bold text-texto-principal">{service.details.price}</span>
+                  </div>
+                  <div className="flex flex-col p-2 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1"><Activity size={12}/> Latencia</span>
+                    <span className="text-sm font-bold text-texto-principal">{service.details.latency}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Card Footer (Función y Estado) */}
               <div className="mt-auto space-y-3 pt-4 border-t border-slate-100">
@@ -218,7 +235,6 @@ export const Services: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
